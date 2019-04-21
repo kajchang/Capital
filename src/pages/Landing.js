@@ -13,9 +13,7 @@ const Landing = ({ accounts, createAccount, setAccounts }) => {
     const [displayInput, setDisplayInput] = useState('');
     const [displaySubmitEnabled, setDisplaySubmitEnabled] = useState(false);
     const [displayState, setDisplayState] = useState({});
-    const [initialized, setInitalized] = useState(accounts.loaded);
-
-    console.log(accounts);
+    const [initialized, setInitialized] = useState(accounts.loaded);
 
     useEffect(() => {
         if (!initialized) {
@@ -23,7 +21,7 @@ const Landing = ({ accounts, createAccount, setAccounts }) => {
                 if (err) return console.log(err);
                 setAccounts(accounts.map(account => new AccountTypes[account.type](account)));
             });
-            setInitalized(true);
+            setInitialized(true);
         }
     });
 
@@ -44,7 +42,7 @@ const Landing = ({ accounts, createAccount, setAccounts }) => {
                     {
                         accounts.data.length > 0 ? accounts.data.map((account, idx) => <tr key={ idx }>
                             <td>{ account.name }</td>
-                            <td>0</td>
+                            <td>0 USD</td>
                             <td>{ account.lastUpdated.format('MMM Do, YYYY') }</td>
                             <td>{ account.created.format('MMM Do, YYYY') }</td>
                         </tr>) : <tr>
@@ -74,16 +72,19 @@ const Landing = ({ accounts, createAccount, setAccounts }) => {
                             }
                         </ListGroup> : null
                     }
-                    {
-                        typeof ChosenType !== 'undefined' ? <ChosenType.Component setEnabled={ setDisplaySubmitEnabled } onChange={ setDisplayState }/> : null
-                    }
-                    <Button disabled={ !displaySubmitEnabled } onClick={ () => {
+                    <form onSubmit={ e => {
+                        e.preventDefault();
                         createAccount(new ChosenType(displayState));
                         setDisplayActive(false);
                         setDisplayInput('');
                         setDisplaySubmitEnabled(false);
                         setDisplayState({});
-                    } } style={ { width: '25%', marginTop: 5 } }>Create</Button>
+                    } }>
+                    {
+                        typeof ChosenType !== 'undefined' ? <ChosenType.Component setEnabled={ setDisplaySubmitEnabled } onChange={ setDisplayState }/> : null
+                    }
+                        <Button disabled={ !displaySubmitEnabled } type='submit' style={ { width: '25%', marginTop: 5 } }>Create</Button>
+                    </form>
                 </Card> : null
             }
         </Layout>

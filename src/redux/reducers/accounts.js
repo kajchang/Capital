@@ -4,7 +4,8 @@ const accounts = (state = { data: [], loaded: false }, action) => {
     switch (action.type) {
         case CREATE_ACCOUNT:
             return {
-                data: [...state.data, action]
+                data: [...state.data, action.account],
+                loaded: state.loaded
             };
         case SET_ACCOUNTS:
             return {
