@@ -1,9 +1,16 @@
-import { CREATE_ACCOUNT } from '../actions';
+import { CREATE_ACCOUNT, SET_ACCOUNTS } from '../actions';
 
-const accounts = (state = [], action) => {
+const accounts = (state = { data: [], loaded: false }, action) => {
     switch (action.type) {
         case CREATE_ACCOUNT:
-            return [...state, action.account];
+            return {
+                data: [...state.data, action]
+            };
+        case SET_ACCOUNTS:
+            return {
+                data: action.accounts,
+                loaded: true
+            };
         default:
             return state;
     }

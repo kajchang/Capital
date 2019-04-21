@@ -1,20 +1,19 @@
-import DataStore from 'nedb';
-import { ipcRenderer } from 'electron';
-import path from 'path';
+import { remote } from 'electron';
 
-export let neDB;
+import { CREATE_ACCOUNT } from './actions';
+
+export let neDB = {};
 
 export const connect = () => {
-    neDB = new DataStore({
-        filename: path.join(
-            ipcRenderer.sendSync('getPath', 'appData'),
-            'capital',
-            'capital.db'
-        ),
-        autoload: true
-    });
+    neDB = remote.getGlobal('db');
 };
 
-export const database = () => {
-    return neDB || {};
+export const database = (state, action) => {
+    switch (action.type) {
+        case CREATE_ACCOUNT:
+            neDB.accounts.insert(action.account.serialize());
+            break
+    }
+
+    return neDB;
 };

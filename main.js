@@ -1,9 +1,21 @@
 'use strict';
 
 // Import parts of electron to use
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const url = require('url');
+const DataStore = require('nedb');
+
+global.db = {};
+
+global.db.accounts = new DataStore({
+    filename: path.join(
+        app.getPath('userData'),
+        'data',
+        'accounts.db'
+    ),
+    autoload: true
+});
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -91,8 +103,4 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
   }
-});
-
-ipcMain.on('getPath', (event, arg) => {
-    event.returnValue = app.getPath(arg);
 });
