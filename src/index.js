@@ -1,12 +1,16 @@
 import React from 'react';
 import reducer from './redux/reducers';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { render } from 'react-dom';
 import App from './App';
-import { connect } from './redux/persist';
+import { connect, neDB } from './redux/persist';
+import AccountRegistry from './registries/AccountRegistry';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+
+import './implementations/Account/Cash';
 
 connect();
 
@@ -17,6 +21,6 @@ root.id = 'root';
 document.body.appendChild(root);
 
 // Now we can render our application into it
-render(<Provider store={ createStore(reducer) }>
+render(<Provider store={ createStore(reducer, applyMiddleware(thunk.withExtraArgument({ neDB, AccountRegistry }))) }>
     <App/>
 </Provider>, document.getElementById('root'));
