@@ -1,5 +1,5 @@
 import AccountModel from '../../models/AccountModel';
-import JustName from '../../components/JustName';
+import CashComponent from '../../components/CashComponent';
 
 import AccountRegistry from '../../registries/AccountRegistry';
 
@@ -9,4 +9,4 @@ class Cash extends AccountModel {
     }
 }
 
-AccountRegistry.registerAccountType(Cash, JustName);
+AccountRegistry.registerAccountType(Cash, CashComponent);

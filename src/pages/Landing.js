@@ -20,6 +20,7 @@ const Landing = ({ accounts, createAccount }) => {
                 <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Type</th>
                     <th>Value</th>
                     <th>Last Updated</th>
                     <th>Created</th>
@@ -29,7 +30,8 @@ const Landing = ({ accounts, createAccount }) => {
                 {
                     accounts.data.length > 0 ? accounts.data.map((account, idx) => <tr key={ idx }>
                         <td>{ account.name }</td>
-                        <td>0 USD</td>
+                        <td>{ account.constructor.name }</td>
+                        <td>{ account.value.USD } USD</td>
                         <td>{ account.lastUpdated.format('MMM Do, YYYY') }</td>
                         <td>{ account.created.format('MMM Do, YYYY') }</td>
                     </tr>) : <tr>
@@ -68,7 +70,10 @@ const Landing = ({ accounts, createAccount }) => {
                         setDisplayState({});
                     } }>
                         {
-                            typeof ChosenType !== 'undefined' ? <ChosenType.Component setEnabled={ setDisplaySubmitEnabled } onChange={ setDisplayState }/> : null
+                            typeof ChosenType !== 'undefined' ? <ChosenType.Component
+                                setEnabled={ setDisplaySubmitEnabled }
+                                onChange={ state => setDisplayState(Object.assign(displayState, state)) }
+                            /> : null
                         }
                         <Button disabled={ !displaySubmitEnabled } type='submit' style={ { width: '25%', marginTop: 5 } }>Create</Button>
                     </form>

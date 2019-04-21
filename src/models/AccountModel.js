@@ -6,6 +6,7 @@ export default class AccountModel {
         this.created = moment(data.created) || moment();
         this.lastUpdated = moment(data.lastUpdated) || this.created.clone();
         this._id = data._id || undefined;
+        this.value = data.value || {};
     }
 
     sync() {
