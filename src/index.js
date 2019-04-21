@@ -4,6 +4,9 @@ import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { render } from 'react-dom';
 import App from './App';
+import { connect } from './redux/persist';
+
+connect();
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 

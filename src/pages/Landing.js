@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Table, Button, Card, Input, ListGroup, ListGroupItem } from 'reactstrap';
-import Layout from './Layout';
+import Layout from '../components/Layout';
 
 import AccountTypes from '../implementations/Account';
 
@@ -8,6 +8,9 @@ const Landing = () => {
     const [displayActive, setDisplayActive] = useState(false);
     const [displayInputActive, setDisplayInputActive] = useState(false);
     const [displayInput, setDisplayInput] = useState('');
+    const [displaySubmitEnabled, setDisplaySubmitEnabled] = useState(false);
+
+    const ChosenType = AccountTypes[displayInput];
 
     return (
         <Layout>
@@ -46,7 +49,10 @@ const Landing = () => {
                             }
                         </ListGroup> : null
                     }
-                    <Button disabled={ true } style={ { width: '25%', marginTop: 5 } }>Create</Button>
+                    {
+                        typeof ChosenType !== 'undefined' ? <ChosenType.Component setEnabled={ setDisplaySubmitEnabled }/> : null
+                    }
+                    <Button disabled={ !displaySubmitEnabled } style={ { width: '25%', marginTop: 5 } }>Create</Button>
                 </Card> : null
             }
         </Layout>

@@ -1,19 +1,19 @@
-'use strict'
+'use strict';
 
 // Import parts of electron to use
-const { app, BrowserWindow } = require('electron')
-const path = require('path')
-const url = require('url')
+const { app, BrowserWindow, ipcMain } = require('electron');
+const path = require('path');
+const url = require('url');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+let mainWindow;
 
 // Keep a reference for dev mode
-let dev = false
+let dev = false;
 
 if (process.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(process.execPath) || /[\\/]electron[\\/]/.test(process.execPath)) {
-  dev = true
+  dev = true;
 }
 
 // Temporary fix broken high-dpi scale factor on Windows (125% scaling)
@@ -91,4 +91,8 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
   }
+});
+
+ipcMain.on('getPath', (event, arg) => {
+    event.returnValue = app.getPath(arg);
 });
