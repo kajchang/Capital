@@ -1,6 +1,7 @@
 import React  from 'react';
 import Landing from './pages/Landing';
 import Accounts from './pages/Accounts';
+import Account from './pages/Account';
 import Loader from './components/Loader';
 import Layout from './components/Layout';
 import { HashRouter, Route } from 'react-router-dom';
@@ -11,6 +12,7 @@ const App = () => (
             <Loader>
                 <Route path='/' exact component={ Landing }/>
                 <Route path='/accounts' exact component={ Accounts }/>
+                <Route path='/accounts/:accountName' exact component={ Account }/>
             </Loader>
         </Layout>
     </HashRouter>

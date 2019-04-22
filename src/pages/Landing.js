@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardBody, CardTitle, Button } from 'reactstrap';
 import { PieChart, Pie, Text, Tooltip } from 'recharts';
-import { withRouter } from 'react-router-dom';
+
 import { connect } from 'react-redux';
 import convert from '../utils/CurrencyConverter';
 
@@ -66,4 +66,4 @@ const mapStateToProps = state => ({
     currencies: state.currencies.data
 });
 
-export default withRouter(connect(mapStateToProps)(Landing));
+export default connect(mapStateToProps)(Landing);

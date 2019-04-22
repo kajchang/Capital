@@ -1,5 +1,6 @@
 import React, { Fragment, useState } from 'react';
 import { Input, InputGroup, InputGroupAddon } from 'reactstrap';
+
 import { connect } from 'react-redux';
 
 const ValueComponent = ({ setEnabled, onChange, currencies }) => {
@@ -27,7 +28,7 @@ const ValueComponent = ({ setEnabled, onChange, currencies }) => {
                         });
                     } }>
                         {
-                            Object.keys(currencies).map(currency => <option name={ currency }>
+                            Object.keys(currencies).map((currency, idx) => <option key={ idx } name={ currency }>
                                 { currency }
                             </option>)
                         }
