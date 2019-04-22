@@ -1,8 +1,9 @@
 import React, { createElement, useState } from 'react';
 import { Table } from 'reactstrap';
 
-const SortTable = ({ data, initialSortType, footer, style }) => {
-    const { columns, rows, comparisons, customComponents } = data;
+const SortTable = ({ data, options, initialSortType, footer, style }) => {
+    const { columns, rows } = data;
+    const { comparisons, customComponents, customHooks } = options;
 
     const [sortType, setSortType] = useState(initialSortType || [columns[0].key, 'asc']);
 
@@ -27,7 +28,7 @@ const SortTable = ({ data, initialSortType, footer, style }) => {
                         .sort(sort(sortType))
                         .map((row, idx) => <tr key={ idx }>
                             {
-                                columns.map((column, idx) => <td key={ idx }>
+                                columns.map((column, idx) => <td key={ idx } onClick={ customHooks.click ? () => customHooks.click({ row }): null } style={ { cursor: customHooks.click ? 'pointer' : 'auto' } }>
                                     { customComponents[column.key] !== undefined ? createElement(customComponents[column.key], { row }) : row[column.key] }
                                 </td>)
                             }
