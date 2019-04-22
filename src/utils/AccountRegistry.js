@@ -1,13 +1,13 @@
 const AccountRegistry = (() => {
-    const AccountTypes = {};
+    const accountTypes = {};
 
     const registerAccountType = (cls, component) => {
         cls.Component = component;
-        AccountTypes[cls.name] = cls;
+        accountTypes[cls.name] = cls;
     };
 
-    const getAccountType = type => AccountTypes[type];
-    const getAccountTypes = () => AccountTypes;
+    const getAccountType = type => accountTypes[type];
+    const getAccountTypes = () => accountTypes;
 
     return {
         registerAccountType,

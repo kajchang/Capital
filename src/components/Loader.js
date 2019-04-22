@@ -2,15 +2,15 @@ import React, { useState, useEffect, Fragment } from 'react';
 import ReactLoading from 'react-loading';
 
 import { connect } from 'react-redux';
-import { fetchAccounts } from '../redux/actions';
+import { doAllLoad } from '../redux/actions';
 
-const Loader = ({ children, fetchAccounts, error, loaded, stage }) => {
+const Loader = ({ children, doAllLoad, error, loaded, stage }) => {
     const [initialized, setInitialized] = useState(false);
 
     useEffect(() => {
         if (!initialized) {
             setInitialized(true);
-            fetchAccounts();
+            doAllLoad();
         }
     });
 
@@ -25,12 +25,12 @@ const Loader = ({ children, fetchAccounts, error, loaded, stage }) => {
 
 const mapStateToProps = state => ({
     error: state.loading.error,
-    loaded: state.accounts.loaded,
+    loaded: state.accounts.loaded && state.currencies.loaded,
     stage: state.loading.stage
 });
 
 const mapDispatchToProps = dispatch => ({
-    fetchAccounts: () => dispatch(fetchAccounts())
+    doAllLoad: () => dispatch(doAllLoad())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Loader);

@@ -3,9 +3,11 @@ import { Table, Button, Card, Input, ListGroup, ListGroupItem } from 'reactstrap
 import { connect } from 'react-redux';
 
 import { createAccount } from '../redux/actions';
-import AccountRegistry from '../registries/AccountRegistry';
+import AccountRegistry from '../utils/AccountRegistry';
+import convert from '../utils/CurrencyConverter';
+import _ from 'lodash-es';
 
-const Accounts = ({ accounts, createAccount }) => {
+const Accounts = ({ accounts, currencies, createAccount }) => {
     const [displayActive, setDisplayActive] = useState(false);
     const [displayInputActive, setDisplayInputActive] = useState(false);
     const [displayInput, setDisplayInput] = useState('');
@@ -28,10 +30,14 @@ const Accounts = ({ accounts, createAccount }) => {
                 </thead>
                 <tbody>
                 {
-                    accounts.data.length > 0 ? accounts.data.map((account, idx) => <tr key={ idx }>
+                    accounts.length > 0 ? accounts.map((account, idx) => <tr key={ idx }>
                         <td>{ account.name }</td>
                         <td>{ account.constructor.name }</td>
-                        <td>{ account.value.USD } USD</td>
+                        <td>{
+                            _.isEqual(Object.keys(account.value), ['USD']) ?
+                                <span>{ convert(currencies, account.value).toFixed(2) } USD</span> :
+                                <i>{ convert(currencies, account.value).toFixed(2) } USD</i>
+                        }</td>
                         <td>{ account.lastUpdated.format('MMM Do, YYYY') }</td>
                         <td>{ account.created.format('MMM Do, YYYY') }</td>
                     </tr>) : <tr>
@@ -40,6 +46,7 @@ const Accounts = ({ accounts, createAccount }) => {
                 }
                 </tbody>
             </Table>
+            <p style={ { fontSize: 10 } }><i>* Italics signal currency conversion</i></p>
             <Button onClick={ () => setDisplayActive(!displayActive) }>
                 + Add Account
             </Button>
@@ -84,7 +91,8 @@ const Accounts = ({ accounts, createAccount }) => {
 };
 
 const mapStateToProps = state => ({
-    accounts: state.accounts
+    accounts: state.accounts.data,
+    currencies: state.currencies.data
 });
 
 const mapDispatchToProps = dispatch => ({

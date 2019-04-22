@@ -3,8 +3,9 @@ import { Card, CardBody, CardTitle, Button } from 'reactstrap';
 import { PieChart, Pie, Text, Tooltip } from 'recharts';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import convert from '../utils/CurrencyConverter';
 
-const Landing = ({ accounts, history }) => (
+const Landing = ({ accounts, currencies, history }) => (
     <div className='d-flex' style={ { margin: 25 } }>
         <Card>
             <CardBody>
@@ -23,11 +24,11 @@ const Landing = ({ accounts, history }) => (
                                 const match = acc.find(data => data.name === cur.constructor.name);
 
                                 if (match) {
-                                    match.value += cur.value.USD;
+                                    match.value += +convert(currencies, cur.value).toFixed(2);
                                 } else {
                                     acc.push({
                                         name: cur.constructor.name,
-                                        value: cur.value.USD
+                                        value: +convert(currencies, cur.value).toFixed(2)
                                     });
                                 }
 
@@ -37,6 +38,7 @@ const Landing = ({ accounts, history }) => (
                             nameKey='name'
                             cx='50%' cy='50%'
                             innerRadius={ 60 } outerRadius={ 80 }
+                            fill='#228b22'
                             label={ ({ cx, cy, midAngle, innerRadius, outerRadius, fill, name }) => {
                                 const RADIAN = Math.PI / 180;
 
@@ -60,7 +62,8 @@ const Landing = ({ accounts, history }) => (
 );
 
 const mapStateToProps = state => ({
-    accounts: state.accounts.data
+    accounts: state.accounts.data,
+    currencies: state.currencies.data
 });
 
 export default withRouter(connect(mapStateToProps)(Landing));

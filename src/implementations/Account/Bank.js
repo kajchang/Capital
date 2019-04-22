@@ -3,10 +3,10 @@ import ValueComponent from '../../components/ValueComponent';
 
 import AccountRegistry from '../../utils/AccountRegistry';
 
-class Cash extends AccountModel {
+class Bank extends AccountModel {
     constructor(data) {
         super(data);
     }
 }
 
-AccountRegistry.registerAccountType(Cash, ValueComponent);
+AccountRegistry.registerAccountType(Bank, ValueComponent);

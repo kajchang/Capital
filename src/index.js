@@ -6,11 +6,12 @@ import { Provider } from 'react-redux';
 import { render } from 'react-dom';
 import App from './App';
 import { connect, neDB } from './redux/persist';
-import AccountRegistry from './registries/AccountRegistry';
+import AccountRegistry from './utils/AccountRegistry';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './implementations/Account/Cash';
+import './implementations/Account/Bank';
 
 connect();
 
