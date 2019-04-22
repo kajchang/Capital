@@ -1,7 +1,7 @@
 export const CREATE_ACCOUNT = 'CREATE_ACCOUNT';
 export const SET_ACCOUNTS = 'SET_ACCOUNTS';
-export const SET_ERROR = 'SET_ERROR';
-export const CLEAR_ERROR = 'CLEAR_ERROR';
+export const SET_LOADING_ERROR = 'SET_LOADING_ERROR';
+export const SET_LOADING_STAGE = 'SET_LOADING_STAGE';
 
 export const createAccount = account => ({
     type: CREATE_ACCOUNT,
@@ -13,22 +13,26 @@ export const setAccounts = accounts => ({
     accounts
 });
 
-export const setError = error => ({
-    type: SET_ERROR,
+export const setLoadingError = error => ({
+    type: SET_LOADING_ERROR,
     error
 });
 
-export const clearError = () => ({
-    type: CLEAR_ERROR
+export const setLoadingStage = stage => ({
+    type: SET_LOADING_STAGE,
+    stage
 });
 
 export const fetchAccounts = () => (
-    (dispatch, getState, { neDB, AccountRegistry }) => neDB.accounts.find({}, (err, accounts) => {
-        if (err) {
-            dispatch(setError(err));
-        } else {
-            dispatch(setAccounts(accounts.map(account => new (AccountRegistry.getAccountType(account.type))(account))));
-            dispatch(clearError());
-        }
-    })
+    (dispatch, getState, { neDB, AccountRegistry }) => {
+        dispatch(setLoadingStage('Loading Accounts'));
+
+        neDB.accounts.find({}, (err, accounts) => {
+            if (err) {
+                dispatch(setLoadingError(err));
+            } else {
+                dispatch(setAccounts(accounts.map(account => new (AccountRegistry.getAccountType(account.type))(account))));
+            }
+        })
+    }
 );

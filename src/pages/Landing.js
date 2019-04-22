@@ -1,94 +1,66 @@
-import React, { Fragment, useState } from 'react';
-import { Table, Button, Card, Input, ListGroup, ListGroupItem } from 'reactstrap';
+import React from 'react';
+import { Card, CardBody, CardTitle, Button } from 'reactstrap';
+import { PieChart, Pie, Text, Tooltip } from 'recharts';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { createAccount } from '../redux/actions';
-import AccountRegistry from '../registries/AccountRegistry';
-
-const Landing = ({ accounts, createAccount }) => {
-    const [displayActive, setDisplayActive] = useState(false);
-    const [displayInputActive, setDisplayInputActive] = useState(false);
-    const [displayInput, setDisplayInput] = useState('');
-    const [displaySubmitEnabled, setDisplaySubmitEnabled] = useState(false);
-    const [displayState, setDisplayState] = useState({});
-
-    const ChosenType = AccountRegistry.getAccountType(displayInput);
-
-    return (
-        <Fragment>
-            <Table style={{ marginTop: 25 }}>
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Value</th>
-                    <th>Last Updated</th>
-                    <th>Created</th>
-                </tr>
-                </thead>
-                <tbody>
+const Landing = ({ accounts, history }) => (
+    <div className='d-flex' style={ { margin: 25 } }>
+        <Card>
+            <CardBody>
+                <CardTitle>
+                    <h3>Accounts</h3>
+                </CardTitle>
+                <p>{ accounts.length } Account{ accounts.length === 1 ? '' : 's' }</p>
                 {
-                    accounts.data.length > 0 ? accounts.data.map((account, idx) => <tr key={ idx }>
-                        <td>{ account.name }</td>
-                        <td>{ account.constructor.name }</td>
-                        <td>{ account.value.USD } USD</td>
-                        <td>{ account.lastUpdated.format('MMM Do, YYYY') }</td>
-                        <td>{ account.created.format('MMM Do, YYYY') }</td>
-                    </tr>) : <tr>
-                        <td colSpan={ 3 }>No Accounts Yet. Add One to Start!</td>
-                    </tr>
+                    accounts.length > 0 ? <PieChart width={ 300 } height={ 300 }>
+                        <Tooltip content={ ({ active, payload }) => active ? <div style={ { background: '#fff', padding: 10, borderRadius: 5, minWidth: 75 } }>
+                            <span style={ { display: 'block' } }>{ payload[0].name }</span>
+                            <span style={ { display: 'block' } }>{ payload[0].value } USD</span>
+                        </div> : null }/>
+                        <Pie
+                            data={ accounts.reduce((acc, cur) => {
+                                const match = acc.find(data => data.name === cur.constructor.name);
+
+                                if (match) {
+                                    match.value += cur.value.USD;
+                                } else {
+                                    acc.push({
+                                        name: cur.constructor.name,
+                                        value: cur.value.USD
+                                    });
+                                }
+
+                                return acc;
+                            }, []) }
+                            dataKey='value'
+                            nameKey='name'
+                            cx='50%' cy='50%'
+                            innerRadius={ 60 } outerRadius={ 80 }
+                            label={ ({ cx, cy, midAngle, innerRadius, outerRadius, fill, name }) => {
+                                const RADIAN = Math.PI / 180;
+
+                                const radius = innerRadius + (outerRadius - innerRadius) * 2.25;
+                                const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                                const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                                return (
+                                    <Text x={ x } y={ y } fill={ fill } textAnchor={ x > cx ? 'start' : 'end' }>{ name }</Text>
+                                );
+                            } }
+                        />
+                    </PieChart> : <div style={ { width: 300, height: 300, lineHeight: '300px', textAlign: 'center' } }>
+                        <span>No Accounts Yet.</span>
+                    </div>
                 }
-                </tbody>
-            </Table>
-            <Button onClick={ () => setDisplayActive(!displayActive) }>
-                + Add Account
-            </Button>
-            {
-                displayActive ? <Card style={ { width: '50%', padding: 25 } }>
-                    <Input value={ displayInput } onChange={ e => setDisplayInput(e.target.value) } onFocus={ () => setDisplayInputActive(true) } placeholder='Account Type'/>
-                    {
-                        displayInputActive ? <ListGroup style={ { position: 'absolute', zIndex: 1, width: 'calc(100% - 50px)', marginTop: 38 } }>
-                            {
-                                Object.keys(AccountRegistry.getAccountTypes())
-                                    .filter(type => type.toLowerCase().includes(displayInput.toLowerCase()))
-                                    .slice(0, 5)
-                                    .map((type, idx) =>
-                                        <ListGroupItem onClick={ () => {
-                                            setDisplayInput(type);
-                                            setDisplayInputActive(false);
-                                        } } key={ idx } style={ { cursor: 'pointer'} }>{ type }</ListGroupItem>
-                                    )
-                            }
-                        </ListGroup> : null
-                    }
-                    <form onSubmit={ e => {
-                        e.preventDefault();
-                        createAccount(new ChosenType(displayState));
-                        setDisplayActive(false);
-                        setDisplayInput('');
-                        setDisplaySubmitEnabled(false);
-                        setDisplayState({});
-                    } }>
-                        {
-                            typeof ChosenType !== 'undefined' ? <ChosenType.Component
-                                setEnabled={ setDisplaySubmitEnabled }
-                                onChange={ state => setDisplayState(Object.assign(displayState, state)) }
-                            /> : null
-                        }
-                        <Button disabled={ !displaySubmitEnabled } type='submit' style={ { width: '25%', marginTop: 5 } }>Create</Button>
-                    </form>
-                </Card> : null
-            }
-        </Fragment>
-    );
-};
+                <Button onClick={ () => history.push('/accounts') }>See Accounts ></Button>
+            </CardBody>
+        </Card>
+    </div>
+);
 
 const mapStateToProps = state => ({
-    accounts: state.accounts
+    accounts: state.accounts.data
 });
 
-const mapDispatchToProps = dispatch => ({
-    createAccount: account => dispatch(createAccount(account)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Landing);
+export default withRouter(connect(mapStateToProps)(Landing));

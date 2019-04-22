@@ -1,7 +1,8 @@
 import React  from 'react';
 import Landing from './pages/Landing';
+import Accounts from './pages/Accounts';
 import Loader from './components/Loader';
-import Layout from './components/Layout'
+import Layout from './components/Layout';
 import { HashRouter, Route } from 'react-router-dom';
 
 const App = () => (
@@ -9,6 +10,7 @@ const App = () => (
         <Layout>
             <Loader>
                 <Route path='/' exact component={ Landing }/>
+                <Route path='/accounts' exact component={ Accounts }/>
             </Loader>
         </Layout>
     </HashRouter>

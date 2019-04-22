@@ -21,7 +21,7 @@ const CashComponent = ({ setEnabled, onChange }) => {
                     setEnabled(!!e.target.value && !!name);
                     onChange({
                         value: {
-                            USD: e.target.value
+                            USD: Number(e.target.value)
                         }
                     });
                 } } placeholder='Value' type='number'/>
