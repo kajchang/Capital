@@ -2,15 +2,12 @@ import moment from 'moment';
 
 export default class AccountModel {
     constructor(data) {
-        this.name = data.name;
-        this.created = moment(data.created) || moment();
-        this.lastUpdated = moment(data.lastUpdated) || this.created.clone();
-        this._id = data._id || undefined;
-        this.value = data.value || {};
-    }
+        const { name, created, lastUpdated, _id } = data;
 
-    sync() {
-
+        this.name = name;
+        this.created = moment(created) || moment();
+        this.lastUpdated = moment(lastUpdated) || this.created.clone();
+        this._id = _id;
     }
 
     serialize() {

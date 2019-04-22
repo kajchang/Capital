@@ -22,7 +22,7 @@ const ValueComponent = ({ setEnabled, onChange, currencies }) => {
                     <select value={ currency } onChange={ e => {
                         setCurrency(e.target.value);
                         onChange({
-                            value: {
+                            initialValue: {
                                 [e.target.value]: value
                             }
                         });
@@ -38,7 +38,7 @@ const ValueComponent = ({ setEnabled, onChange, currencies }) => {
                     setValue(e.target.value);
                     setEnabled(!!e.target.value && !!name);
                     onChange({
-                        value: {
+                        initialValue: {
                             [currency]: Number(e.target.value)
                         }
                     });

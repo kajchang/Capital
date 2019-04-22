@@ -1,4 +1,5 @@
-const convert = (rates, value) => Object.keys(value)
-    .reduce((acc, cur) => acc + value[cur] / rates[cur], 0);
+const convert = (rates, transactions) => transactions
+    .reduce((total, transaction) => total + Object.keys(transaction.values)
+        .reduce((transactionTotal, currency) => transactionTotal + transaction.values[currency] / rates[currency], 0), 0);
 
 export default convert;

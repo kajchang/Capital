@@ -17,6 +17,15 @@ global.db.accounts = new DataStore({
     autoload: true
 });
 
+global.db.transactions = new DataStore({
+    filename: path.join(
+        app.getPath('userData'),
+        'data',
+        'transactions.db'
+    ),
+    autoload: true
+});
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;

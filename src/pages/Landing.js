@@ -5,7 +5,7 @@ import { PieChart, Pie, Text, Tooltip } from 'recharts';
 import { connect } from 'react-redux';
 import convert from '../utils/CurrencyConverter';
 
-const Landing = ({ accounts, currencies, history }) => (
+const Landing = ({ accounts, currencies, transactions, history }) => (
     <div className='d-flex' style={ { margin: 25 } }>
         <Card>
             <CardBody>
@@ -24,11 +24,11 @@ const Landing = ({ accounts, currencies, history }) => (
                                 const match = acc.find(data => data.name === cur.constructor.name);
 
                                 if (match) {
-                                    match.value += +convert(currencies, cur.value).toFixed(2);
+                                    match.value += +convert(currencies, transactions.filter(transaction => transaction.accountId === cur._id)).toFixed(2);
                                 } else {
                                     acc.push({
                                         name: cur.constructor.name,
-                                        value: +convert(currencies, cur.value).toFixed(2)
+                                        value: +convert(currencies, transactions.filter(transaction => transaction.accountId === cur._id)).toFixed(2)
                                     });
                                 }
 
@@ -63,7 +63,8 @@ const Landing = ({ accounts, currencies, history }) => (
 
 const mapStateToProps = state => ({
     accounts: state.accounts.data,
-    currencies: state.currencies.data
+    currencies: state.currencies.data,
+    transactions: state.transactions.data
 });
 
 export default connect(mapStateToProps)(Landing);
