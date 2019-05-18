@@ -1,12 +1,14 @@
-import React from 'react';
-import { Card, CardBody, CardTitle, Button } from 'reactstrap';
+import React, { Fragment } from 'react';
+import { Card, CardBody, CardTitle, Button, ListGroup, ListGroupItem } from 'reactstrap';
 import { PieChart, Pie, Text, Tooltip } from 'recharts';
 
 import { connect } from 'react-redux';
-import convert from '../utils/CurrencyConverter';
+import { convert, findAccount, findTransactions } from '../utils/util';
+import moment from 'moment';
+import _ from 'lodash-es';
 
 const Landing = ({ accounts, currencies, transactions, history }) => (
-    <div className='d-flex' style={ { margin: 25 } }>
+    <div className='d-flex justify-content-around' style={ { margin: 25 } }>
         <Card>
             <CardBody>
                 <CardTitle>
@@ -17,18 +19,21 @@ const Landing = ({ accounts, currencies, transactions, history }) => (
                     accounts.length > 0 ? <PieChart width={ 300 } height={ 300 }>
                         <Tooltip content={ ({ active, payload }) => active ? <div style={ { background: '#fff', padding: 10, borderRadius: 5, minWidth: 75 } }>
                             <span style={ { display: 'block' } }>{ payload[0].name }</span>
-                            <span style={ { display: 'block' } }>{ payload[0].value } USD</span>
+                            <span style={ { display: 'block' } }>{ payload[0].payload.count } Account{ payload[0].payload.count === 1 ? '' : 's' }</span>
+                            <span style={ { display: 'block' } }>{ payload[0].value} USD</span>
                         </div> : null }/>
                         <Pie
                             data={ accounts.reduce((acc, cur) => {
                                 const match = acc.find(data => data.name === cur.constructor.name);
 
                                 if (match) {
-                                    match.value += +convert(currencies, transactions.filter(transaction => transaction.accountId === cur._id)).toFixed(2);
+                                    match.value += +convert(currencies, findTransactions(transactions, cur._id)).toFixed(2);
+                                    match.count++;
                                 } else {
                                     acc.push({
                                         name: cur.constructor.name,
-                                        value: +convert(currencies, transactions.filter(transaction => transaction.accountId === cur._id)).toFixed(2)
+                                        value: +convert(currencies, findTransactions(transactions, cur._id)).toFixed(2),
+                                        count: 1
                                     });
                                 }
 
@@ -56,6 +61,57 @@ const Landing = ({ accounts, currencies, transactions, history }) => (
                     </div>
                 }
                 <Button onClick={ () => history.push('/accounts') }>See Accounts ></Button>
+            </CardBody>
+        </Card>
+        <Card>
+            <CardBody>
+                <CardTitle>
+                    <h3>Transactions</h3>
+                </CardTitle>
+                <p>{ transactions.length } Transaction{ transactions.length === 1 ? '' : 's' }</p>
+                {
+                    transactions.length > 0 ? <Fragment>
+                        <ListGroup style={ { width: 300 } }>
+                            {
+                                transactions
+                                    .sort((a, b) => moment(b.created).diff(moment(a.created)))
+                                    .slice(0, 3)
+                                    .map((transaction, idx) => <ListGroupItem className='d-flex justify-content-between' key={ idx }>
+                                        <div>
+                                            <h5>{ transaction.name }</h5>
+                                            <span>{ findAccount(accounts, transaction.accountId).name }</span>
+                                        </div>
+                                        <div>
+                                            {
+                                                (() => {
+                                                    let inner, color;
+
+                                                    const value = convert(currencies, [transaction]).toFixed(2);
+
+                                                    if (value > 0) {
+                                                        inner = `+${ value } USD`;
+                                                        color = 'green';
+                                                    } else {
+                                                        inner = `-${ value } USD`;
+                                                        color = 'red';
+                                                    }
+
+                                                    if (_.isEqual(Object.keys(transaction.values), ['USD'])) {
+                                                        return <span style={ { color } }>{ inner }</span>;
+                                                    } else {
+                                                        return <i style={ { color } }>{ inner }</i>;
+                                                    }
+                                                })()
+                                            }
+                                        </div>
+                                    </ListGroupItem>)
+                            }
+                        </ListGroup>
+                        <p style={ { fontSize: 10 } }><i>* Italics mark currency conversion</i></p>
+                    </Fragment> : <div style={ { width: 300, height: 300, lineHeight: '300px', textAlign: 'center' } }>
+                        <span>No Transactions Yet.</span>
+                    </div>
+                }
             </CardBody>
         </Card>
     </div>

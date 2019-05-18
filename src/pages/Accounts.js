@@ -7,16 +7,16 @@ import ButtonContent from '../components/ButtonContent';
 import { connect } from 'react-redux';
 import { createAccount, createTransaction } from '../redux/actions';
 import AccountRegistry from '../utils/AccountRegistry';
-import convert from '../utils/CurrencyConverter';
+import TransactionModel from '../models/TransactionModel';
+import { convert, findTransactions } from '../utils/util';
 import _ from 'lodash-es';
 import moment from 'moment';
 import uuid from 'uuid/v1';
-import TransactionModel from '../models/TransactionModel';
 
 const Accounts = ({ accounts, currencies, transactions, createAccount, createTransaction, history }) => {
     const [selectedType, setSelectedType] = useState(null);
     const [displaySubmitEnabled, setDisplaySubmitEnabled] = useState(false);
-    const [typeState, setTypeState] = useState({});
+    const [accountState, setAccountState] = useState({});
 
     return (
         <div style={ { margin: 25 } }>
@@ -31,7 +31,7 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
                 rows: accounts.map(account => ({
                     name: account.name,
                     type: account.constructor.name,
-                    value: +convert(currencies, transactions.filter(transaction => transaction.accountId === account._id)).toFixed(2),
+                    value: +convert(currencies, findTransactions(transactions, account._id)).toFixed(2),
                     lastUpdated: account.lastUpdated.format('MMM Do, YYYY'),
                     created: account.created.format('MMM Do, YYYY'),
                     account
@@ -39,19 +39,16 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
             } }
             options={ {
                 customComponents: {
-                    value: ({ row }) => transactions.filter(transaction => transaction.accountId === row.account._id).some(transaction => _.isEqual(Object.keys(transaction.values), ['USD'])) ?
-                        <span>{ convert(currencies, transactions.filter(transaction => transaction.accountId === row.account._id)).toFixed(2) } USD</span> :
-                        <i>{ convert(currencies, transactions.filter(transaction => transaction.accountId === row.account._id)).toFixed(2) } USD</i>
+                    value: ({ row }) => findTransactions(transactions, row.account._id).some(transaction => _.isEqual(Object.keys(transaction.values), ['USD'])) ?
+                        <span>{ convert(currencies, findTransactions(transactions, row.account._id)).toFixed(2) } USD</span> :
+                        <i>{ convert(currencies, findTransactions(transactions, row.account._id)).toFixed(2) } USD</i>
                 },
                 customHooks: {
                     click: ({ row }) => history.push(`/accounts/${ row.account._id }`)
                 },
                 comparisons: {
-                    name: (a, b) => a.localeCompare(b),
-                    type: (a, b) => a.localeCompare(b),
-                    value: (a, b) => b - a,
-                    lastUpdated: (a, b) => moment(a).diff(moment(b)),
-                    created: (a, b) => moment(a).diff(moment(b))
+                    lastUpdated: (a, b) => moment(a, 'MMM Do, YYYY').diff(moment(b, 'MMM Do, YYYY')),
+                    created: (a, b) => moment(a, 'MMM Do, YYYY').diff(moment(b, 'MMM Do, YYYY'))
                 }
             } } initalSortType={ ['value', 'asc'] } footer={ ({ data }) => data.rows.length > 0 ? <tr>
                 <td>Total</td>
@@ -81,11 +78,11 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
 
                         const _id = uuid();
                         const timestamp = moment();
-                        const initialValue = typeState.initialValue;
-                        delete typeState.initialValue;
+                        const initialValue = accountState.initialValue;
+                        delete accountState.initialValue;
 
                         createAccount(new (AccountRegistry.getAccountType(selectedType))(Object.assign(
-                            typeState, { _id, created: timestamp }
+                            accountState, { _id, created: timestamp }
                         )));
                         createTransaction(new TransactionModel({
                             name: 'Initial Amount',
@@ -95,12 +92,12 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
                         }));
                         setSelectedType(null);
                         setDisplaySubmitEnabled(false);
-                        setTypeState({});
+                        setAccountState({});
                     } }>
                         {
                             selectedType !== null ? createElement(AccountRegistry.getAccountType(selectedType).component, {
                                 setEnabled: setDisplaySubmitEnabled,
-                                onChange: state => setTypeState(Object.assign(typeState, state))
+                                onChange: state => setAccountState(Object.assign(accountState, state))
                             }) : null
                         }
                         <Button disabled={ !displaySubmitEnabled } type='submit' style={ { width: '25%', marginTop: 5 } }>Create</Button>

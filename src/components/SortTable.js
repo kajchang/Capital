@@ -1,13 +1,27 @@
 import React, { createElement, useState } from 'react';
 import { Table } from 'reactstrap';
 
-const SortTable = ({ data, options, initialSortType, footer, style }) => {
+const SortTable = ({ data, options, initialSortType, header, footer, style }) => {
     const { columns, rows } = data;
     const { comparisons, customComponents, customHooks } = options;
 
     const [sortType, setSortType] = useState(initialSortType || [columns[0].key, 'asc']);
 
-    const sort = sortType => (a, b) => comparisons[sortType[0]](a[sortType[0]], b[sortType[0]]) * (sortType[1] === 'asc' ? 1 : -1);
+    const smartSort = (a, b) => {
+        if (typeof a === 'string' && typeof b === 'string')  {
+            return b.localeCompare(a);
+        } else if (typeof a === 'number' && typeof b === 'number') {
+            return a - b;
+        } else {
+            return 0;
+        }
+    };
+
+    const sort = sortType => (a, b) => {
+        const [sortField, sortDirection] = sortType;
+        const sortFunction = comparisons[sortField] || smartSort;
+        return sortFunction(a[sortField], b[sortField]) * (sortDirection === 'asc' ? -1 : 1)
+    };
 
     return (
         <Table style={ style }>
@@ -24,11 +38,14 @@ const SortTable = ({ data, options, initialSortType, footer, style }) => {
             </thead>
             <tbody>
                 {
+                    header ? createElement(header, { data }) : null
+                }
+                {
                     rows
                         .sort(sort(sortType))
                         .map((row, idx) => <tr key={ idx }>
                             {
-                                columns.map((column, idx) => <td key={ idx } onClick={ customHooks.click ? () => customHooks.click({ row }): null } style={ { cursor: customHooks.click ? 'pointer' : 'auto' } }>
+                                columns.map((column, idx) => <td key={ idx } onClick={ (customHooks && customHooks.click) ? () => customHooks.click({ row }) : null } style={ { cursor: customHooks && customHooks.click ? 'pointer' : 'auto' } }>
                                     { customComponents[column.key] !== undefined ? createElement(customComponents[column.key], { row }) : row[column.key] }
                                 </td>)
                             }

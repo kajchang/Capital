@@ -3,19 +3,19 @@ import { Container, Nav, NavItem } from 'reactstrap';
 
 import { withRouter } from 'react-router-dom';
 
-const TabbedLink = ({ children, history, to }) => (
-    <NavItem onClick={ () => history.push(to) } style={ { WebkitAppRegion: 'no-drag', cursor: 'pointer', fontSize: 20, paddingRight: 15, opacity: history.location.pathname === to ? 1 : 0.5 } }>
+const TabbedLink = withRouter(({ children, history, to }) => (
+    <NavItem onClick={ () => history.push(to) } style={ { WebkitAppRegion: 'no-drag', cursor: 'pointer', fontSize: 20, paddingRight: 15, opacity: ((to !== '/' && history.location.pathname.startsWith(to)) || history.location.pathname === to) ? 1 : 0.5 } }>
         { children }
     </NavItem>
-);
+));
 
-const Landing = ({ children, history }) => (
+const Landing = ({ children }) => (
     <Fragment>
         <Nav className='bg-light' style={ { WebkitAppRegion: 'drag', padding: 25 } }>
-            <TabbedLink to='/' history={ history }>
+            <TabbedLink to='/'>
                 Capital
             </TabbedLink>
-            <TabbedLink to='/accounts' history={ history }>
+            <TabbedLink to='/accounts'>
                 Accounts
             </TabbedLink>
         </Nav>

@@ -12,7 +12,7 @@ const App = () => (
             <Loader>
                 <Route path='/' exact component={ Landing }/>
                 <Route path='/accounts' exact component={ Accounts }/>
-                <Route path='/accounts/:accountName' exact component={ Account }/>
+                <Route path='/accounts/:accountId' exact component={ Account }/>
             </Loader>
         </Layout>
     </HashRouter>
