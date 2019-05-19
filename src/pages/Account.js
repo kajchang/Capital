@@ -15,8 +15,8 @@ const Account = ({ match, accounts, currencies, transactions }) => {
                 <CardBody>
                     <CardTitle>
                         <h3>{ account.name }</h3>
-                        <p>Created: { moment(account.created).format('MMM Do, YYYY') }</p>
-                        <p>Last Updated: { moment(account.lastUpdated).format('MMM Do, YYYY') }</p>
+                        <span style={ { display: 'block' } }>Created: { moment(account.created).format('MMM Do, YYYY') }</span>
+                        <span style={ { display: 'block' } }>Last Updated: { moment(account.lastUpdated).format('MMM Do, YYYY') }</span>
                     </CardTitle>
                 </CardBody>
             </Card>
@@ -28,7 +28,7 @@ const Account = ({ match, accounts, currencies, transactions }) => {
                 ],
                 rows: findTransactions(transactions, account._id).map(transaction => ({
                     name: transaction.name,
-                    value: +convert(currencies, [transaction]).toFixed(2),
+                    value: convert(currencies, [transaction]).toFixed(2),
                     date: transaction.created.format('MMM Do, YYYY'),
                     transaction
                 }))
@@ -49,7 +49,7 @@ const Account = ({ match, accounts, currencies, transactions }) => {
                 }
                 <td>
                     {
-                        data.rows.reduce((acc, cur) => acc + cur.value, 0).toFixed(2)
+                        data.rows.reduce((acc, cur) => acc + +cur.value, 0).toFixed(2)
                     } USD
                 </td>
                 {

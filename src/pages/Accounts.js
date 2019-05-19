@@ -2,7 +2,7 @@ import React, { createElement, useState } from 'react';
 import { Button, Card } from 'reactstrap';
 import SortTable from '../components/SortTable';
 import PopupSearch from '../components/PopupSearch';
-import ButtonContent from '../components/ButtonContent';
+import ModalButton from '../components/ModalButton';
 
 import { connect } from 'react-redux';
 import { createAccount, createTransaction } from '../redux/actions';
@@ -31,7 +31,7 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
                 rows: accounts.map(account => ({
                     name: account.name,
                     type: account.constructor.name,
-                    value: +convert(currencies, findTransactions(transactions, account._id)).toFixed(2),
+                    value: convert(currencies, findTransactions(transactions, account._id)).toFixed(2),
                     lastUpdated: account.lastUpdated.format('MMM Do, YYYY'),
                     created: account.created.format('MMM Do, YYYY'),
                     account
@@ -40,8 +40,8 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
             options={ {
                 customComponents: {
                     value: ({ row }) => findTransactions(transactions, row.account._id).some(transaction => _.isEqual(Object.keys(transaction.values), ['USD'])) ?
-                        <span>{ convert(currencies, findTransactions(transactions, row.account._id)).toFixed(2) } USD</span> :
-                        <i>{ convert(currencies, findTransactions(transactions, row.account._id)).toFixed(2) } USD</i>
+                        <span>{ row.value } USD</span> :
+                        <i>{ row.value } USD</i>
                 },
                 customHooks: {
                     click: ({ row }) => history.push(`/accounts/${ row.account._id }`)
@@ -50,12 +50,12 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
                     lastUpdated: (a, b) => moment(a, 'MMM Do, YYYY').diff(moment(b, 'MMM Do, YYYY')),
                     created: (a, b) => moment(a, 'MMM Do, YYYY').diff(moment(b, 'MMM Do, YYYY'))
                 }
-            } } initalSortType={ ['value', 'asc'] } footer={ ({ data }) => data.rows.length > 0 ? <tr>
+            } } initialSortType={ ['name', 'asc'] } footer={ ({ data }) => data.rows.length > 0 ? <tr>
                 <td>Total</td>
                 <td colSpan={ data.columns.findIndex((({ key }) => key === 'value')) - 1 }/>
                 <td>
                     {
-                        data.rows.reduce((acc, cur) => acc + cur.value, 0).toFixed(2)
+                        data.rows.reduce((acc, cur) => acc + +cur.value, 0).toFixed(2)
                     } USD
                 </td>
                 <td colSpan={ data.columns.length - 1 - data.columns.findIndex((({ key }) => key === 'value')) }/>
@@ -63,8 +63,10 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
                 <td colSpan={ data.columns.length }>No Accounts Yet. Add One to Start!</td>
             </tr> }/>
             <p style={ { fontSize: 10 } }><i>* Italics mark currency conversion</i></p>
-            <ButtonContent text='+ Add Account'>
-                <Card style={ { width: '50%', padding: 25 } }>
+            <ModalButton
+                text='+ Add Account'
+                component={ ({ close }) => <Card style={ { padding: 25 } }>
+                    <span onClick={ close } style={ { cursor: 'pointer', position: 'absolute', top: 5, right: 5 } }>✕</span>
                     <PopupSearch
                         placeholder='Account Type'
                         maxShown={ 5 }
@@ -93,6 +95,7 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
                         setSelectedType(null);
                         setDisplaySubmitEnabled(false);
                         setAccountState({});
+                        close();
                     } }>
                         {
                             selectedType !== null ? createElement(AccountRegistry.getAccountType(selectedType).component, {
@@ -102,8 +105,8 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
                         }
                         <Button disabled={ !displaySubmitEnabled } type='submit' style={ { width: '25%', marginTop: 5 } }>Create</Button>
                     </form>
-                </Card>
-            </ButtonContent>
+                </Card> }
+            />
         </div>
     );
 };
