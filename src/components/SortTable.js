@@ -20,7 +20,7 @@ const SortTable = ({ data, options, initialSortType, header, footer, style }) =>
     const sort = sortType => (a, b) => {
         const [sortField, sortDirection] = sortType;
         const sortFunction = comparisons[sortField] || smartSort;
-        return sortFunction(a[sortField], b[sortField]) * (sortDirection === 'asc' ? -1 : 1)
+        return sortFunction(a[sortField], b[sortField], a, b) * (sortDirection === 'asc' ? -1 : 1)
     };
 
     return (

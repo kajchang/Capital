@@ -47,10 +47,10 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
                     click: ({ row }) => history.push(`/accounts/${ row.account._id }`)
                 },
                 comparisons: {
-                    lastUpdated: (a, b) => moment(a, 'MMM Do, YYYY').diff(moment(b, 'MMM Do, YYYY')),
-                    created: (a, b) => moment(a, 'MMM Do, YYYY').diff(moment(b, 'MMM Do, YYYY'))
+                    lastUpdated: (_, __, a, b) => a.account.lastUpdated.diff(b.account.lastUpdated),
+                    created: (_, __, a, b) => a.account.created.diff(b.account.created)
                 }
-            } } initialSortType={ ['name', 'asc'] } footer={ ({ data }) => data.rows.length > 0 ? <tr>
+            } } initialSortType={ ['created', 'asc'] } footer={ ({ data }) => data.rows.length > 0 ? <tr>
                 <td>Total</td>
                 <td colSpan={ data.columns.findIndex((({ key }) => key === 'value')) - 1 }/>
                 <td>

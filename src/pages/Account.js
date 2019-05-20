@@ -121,9 +121,9 @@ const Account = ({ match, accounts, currencies, transactions, createTransaction,
                     }
                 },
                 comparisons: {
-                    date: (a, b) => moment(a, 'MMM Do, YYYY').diff(moment(b, 'MMM Do, YYYY'))
+                    date: (_, __, a, b) => a.transaction.created.diff(b.transaction.created)
                 }
-            } } initalSortType={ ['value', 'asc'] } footer={ ({ data }) => data.rows.length > 0 ? <tr>
+            } } initialSortType={ ['date', 'asc'] } footer={ ({ data }) => data.rows.length > 0 ? <tr>
                 <td>Total</td>
                 {
                     data.columns.findIndex((({ key }) => key === 'value')) - 1 > 0 ? <td colSpan={ data.columns.findIndex((({ key }) => key === 'value')) - 1 }/> : null
