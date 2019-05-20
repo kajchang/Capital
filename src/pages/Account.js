@@ -100,9 +100,25 @@ const Account = ({ match, accounts, currencies, transactions, createTransaction,
             } }
             options={ {
                 customComponents: {
-                    value: ({ row }) => _.isEqual(Object.keys(row.transaction.values), ['USD']) ?
-                        <span>{ row.value } USD</span> :
-                        <i>{ row.value } USD</i>
+                    value: ({ row }) => {
+                        let inner, color;
+
+                        if (row.value >= 0) {
+                            inner = `+${ row.value } USD`;
+                            color = 'green';
+                        } else {
+                            inner = `${ row.value } USD`;
+                            color = 'red';
+                        }
+
+                        if (_.isEqual(Object.keys(row.transaction.values), ['USD'])) {
+                            return <span style={ { color } }>{ inner }</span>;
+                        } else {
+                            return <i style={ { color } }>{ inner } ({ Object.keys(row.transaction.values)
+                                .map(value => `${ row.transaction.values[value] >= 0 ? '+' : '-' }${ row.transaction.values[value] } ${ value }`)
+                                .join(', ') })</i>;
+                        }
+                    }
                 },
                 comparisons: {
                     date: (a, b) => moment(a, 'MMM Do, YYYY').diff(moment(b, 'MMM Do, YYYY'))
@@ -122,6 +138,7 @@ const Account = ({ match, accounts, currencies, transactions, createTransaction,
                 }
             </tr> : null }
             />
+            <p style={ { fontSize: 10 } }><i>* Italics mark currency conversion</i></p>
         </div>
     );
 };

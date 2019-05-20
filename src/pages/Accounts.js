@@ -39,7 +39,7 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
             } }
             options={ {
                 customComponents: {
-                    value: ({ row }) => findTransactions(transactions, row.account._id).some(transaction => _.isEqual(Object.keys(transaction.values), ['USD'])) ?
+                    value: ({ row }) => findTransactions(transactions, row.account._id).every(transaction => _.isEqual(Object.keys(transaction.values), ['USD'])) ?
                         <span>{ row.value } USD</span> :
                         <i>{ row.value } USD</i>
                 },

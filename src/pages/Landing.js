@@ -88,11 +88,11 @@ const Landing = ({ accounts, currencies, transactions, history }) => (
 
                                                     const value = convert(currencies, [transaction]).toFixed(2);
 
-                                                    if (value > 0) {
+                                                    if (value >= 0) {
                                                         inner = `+${ value } USD`;
                                                         color = 'green';
                                                     } else {
-                                                        inner = `-${ value } USD`;
+                                                        inner = `${ value } USD`;
                                                         color = 'red';
                                                     }
 
