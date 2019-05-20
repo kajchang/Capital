@@ -16,13 +16,13 @@ const ValueComponent = ({ setEnabled, onChange, currencies }) => {
                 onChange({
                     name: e.target.value
                 });
-            } } placeholder='Account Name' style={ { marginTop: 10, marginBottom: 10 } }/>
+            } } placeholder='Name' style={ { marginTop: 10, marginBottom: 10 } }/>
             <InputGroup style={ { marginTop: 10, marginBottom: 10 } }>
                 <InputGroupAddon addonType='prepend'>
                     <select value={ currency } onChange={ e => {
                         setCurrency(e.target.value);
                         onChange({
-                            initialValue: {
+                            values: {
                                 [e.target.value]: value
                             }
                         });
@@ -38,7 +38,7 @@ const ValueComponent = ({ setEnabled, onChange, currencies }) => {
                     setValue(e.target.value);
                     setEnabled(!!e.target.value && !!name);
                     onChange({
-                        initialValue: {
+                        values: {
                             [currency]: Number(e.target.value)
                         }
                     });

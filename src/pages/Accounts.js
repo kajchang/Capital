@@ -65,7 +65,7 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
             <p style={ { fontSize: 10 } }><i>* Italics mark currency conversion</i></p>
             <ModalButton
                 text='+ Add Account'
-                component={ ({ close }) => <Card style={ { padding: 25 } }>
+                component={ ({ close }) => <Card style={ { width: '80vw', padding: 25 } }>
                     <span onClick={ close } style={ { cursor: 'pointer', position: 'absolute', top: 5, right: 5 } }>✕</span>
                     <PopupSearch
                         placeholder='Account Type'
@@ -80,8 +80,8 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
 
                         const _id = uuid();
                         const timestamp = moment();
-                        const initialValue = accountState.initialValue;
-                        delete accountState.initialValue;
+                        const values = accountState.values;
+                        delete accountState.values;
 
                         createAccount(new (AccountRegistry.getAccountType(selectedType))(Object.assign(
                             accountState, { _id, created: timestamp }
@@ -89,12 +89,13 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
                         createTransaction(new TransactionModel({
                             name: 'Initial Amount',
                             accountId: _id,
-                            values: initialValue,
+                            values,
                             created: timestamp
                         }));
                         setSelectedType(null);
                         setDisplaySubmitEnabled(false);
                         setAccountState({});
+
                         close();
                     } }>
                         {
@@ -103,7 +104,7 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
                                 onChange: state => setAccountState(Object.assign(accountState, state))
                             }) : null
                         }
-                        <Button disabled={ !displaySubmitEnabled } type='submit' style={ { width: '25%', marginTop: 5 } }>Create</Button>
+                        <Button disabled={ !displaySubmitEnabled } type='submit' style={ { marginTop: 5 } }>Create</Button>
                     </form>
                 </Card> }
             />

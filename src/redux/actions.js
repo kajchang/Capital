@@ -3,16 +3,25 @@ import axios from 'axios';
 import TransactionModel from '../models/TransactionModel';
 
 export const CREATE_ACCOUNT = 'CREATE_ACCOUNT';
+export const DELETE_ACCOUNT = 'DELETE_ACCOUNT';
 export const SET_ACCOUNTS = 'SET_ACCOUNTS';
-export const SET_CURRENCIES = 'SET_CURRENCIES';
-export const SET_LOADING_ERROR = 'SET_LOADING_ERROR';
-export const SET_LOADING_STAGE = 'SET_LOADING_STAGE';
+
 export const CREATE_TRANSACTION = 'CREATE_TRANSACTION';
 export const SET_TRANSACTIONS = 'SET_TRANSACTIONS';
+
+export const SET_CURRENCIES = 'SET_CURRENCIES';
+
+export const SET_LOADING_ERROR = 'SET_LOADING_ERROR';
+export const SET_LOADING_STAGE = 'SET_LOADING_STAGE';
 
 export const createAccount = account => ({
     type: CREATE_ACCOUNT,
     account
+});
+
+export const deleteAccount = _id => ({
+    type: DELETE_ACCOUNT,
+    _id
 });
 
 export const setAccounts = accounts => ({
@@ -20,9 +29,9 @@ export const setAccounts = accounts => ({
     accounts
 });
 
-export const setCurrencies = currencies => ({
-    type: SET_CURRENCIES,
-    currencies
+export const createTransaction = transaction => ({
+    type: CREATE_TRANSACTION,
+    transaction
 });
 
 export const setTransactions = transactions => ({
@@ -30,9 +39,9 @@ export const setTransactions = transactions => ({
     transactions
 });
 
-export const createTransaction = transaction => ({
-    type: CREATE_TRANSACTION,
-    transaction
+export const setCurrencies = currencies => ({
+    type: SET_CURRENCIES,
+    currencies
 });
 
 export const setLoadingError = error => ({

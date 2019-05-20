@@ -5,8 +5,6 @@ const SortTable = ({ data, options, initialSortType, header, footer, style }) =>
     const { columns, rows } = data;
     const { comparisons, customComponents, customHooks } = options;
 
-    console.log(initialSortType);
-
     const [sortType, setSortType] = useState(initialSortType || [columns[0].key, 'asc']);
 
     const smartSort = (a, b) => {

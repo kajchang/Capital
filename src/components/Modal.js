@@ -11,11 +11,10 @@ const Modal = ({ shown, children }) => (
         overflow: 'auto',
         backgroundColor: 'rgba(0, 0, 0, 0.4)'
     } }><div style={ {
-        position: 'fixed',
-        top: '30%',
-        left: '50%',
-        marginLeft: '-40%',
-        width: '80%'
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%'
     } }>
         { children }
     </div></div>: null
