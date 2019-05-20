@@ -47,6 +47,7 @@ const Account = ({ match, accounts, currencies, transactions, createTransaction,
                             setEnabled={ setSubmitEnabled }
                             onChange={ state => setTransactionState(Object.assign(transactionState, state)) }
                             currencies={ currencies }
+                            min={ -convert(currencies, findTransactions(transactions, account._id)) }
                         />
                         <Button disabled={ !submitEnabled } type='submit' style={ { marginTop: 5 } }>Create</Button>
                     </form>

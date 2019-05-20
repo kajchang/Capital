@@ -19,6 +19,9 @@ export const database = (state, action) => {
             neDB.accounts.remove({ _id: action._id }, err => {
                 if (err) return console.log(err);
             });
+            neDB.transactions.remove({ accountId: action._id }, err => {
+                if (err) return console.log(err);
+            });
             break;
         case CREATE_TRANSACTION:
             neDB.transactions.insert(action.transaction.serialize(), err => {

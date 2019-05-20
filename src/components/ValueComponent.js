@@ -3,7 +3,7 @@ import { Input, InputGroup, InputGroupAddon } from 'reactstrap';
 
 import { connect } from 'react-redux';
 
-const ValueComponent = ({ setEnabled, onChange, currencies }) => {
+const ValueComponent = ({ setEnabled, onChange, currencies, min = 0 }) => {
     const [name, setName] = useState('');
     const [value, setValue] = useState(0);
     const [currency, setCurrency] = useState('USD');
@@ -12,7 +12,7 @@ const ValueComponent = ({ setEnabled, onChange, currencies }) => {
         <Fragment>
             <Input value={ name } onChange={ e => {
                 setName(e.target.value);
-                setEnabled(!!e.target.value && !!value);
+                setEnabled(!!e.target.value && parseFloat(value) >= min && parseFloat(value) !== 0);
                 onChange({
                     name: e.target.value
                 });
@@ -36,7 +36,7 @@ const ValueComponent = ({ setEnabled, onChange, currencies }) => {
                 </InputGroupAddon>
                 <Input value={ value } onChange={ e => {
                     setValue(e.target.value);
-                    setEnabled(!!e.target.value && !!name);
+                    setEnabled(!!name && !!name && parseFloat(e.target.value) >= min && parseFloat(e.target.value) !== 0);
                     onChange({
                         values: {
                             [currency]: Number(e.target.value)
