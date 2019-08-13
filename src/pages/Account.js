@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { Button, Card, CardBody, CardTitle, Row, Col } from 'reactstrap';
+import React, { createElement, useState } from 'react';
+import { Button, Card, CardBody, CardTitle, Row, Col, Input } from 'reactstrap';
 import SortTable from '../components/SortTable';
 import ModalButton from '../components/ModalButton';
-import ValueComponent from '../components/ValueComponent';
 
 import { connect } from 'react-redux';
 import moment from 'moment';
@@ -10,9 +9,11 @@ import { convert, findTransactions } from '../utils/util';
 import _ from 'lodash-es';
 import TransactionModel from '../models/TransactionModel';
 import { createTransaction, deleteAccount } from '../redux/actions';
+import AccountRegistry from '../utils/AccountRegistry';
 
 const Account = ({ match, accounts, currencies, transactions, createTransaction, deleteAccount, history }) => {
     const account = accounts.find(account => account._id === match.params.accountId);
+    const accountType = account.__proto__.constructor;
 
     const [submitEnabled, setSubmitEnabled] = useState(false);
     const [transactionState, setTransactionState] = useState({});
@@ -39,17 +40,27 @@ const Account = ({ match, accounts, currencies, transactions, createTransaction,
                             accountId: account._id,
                             ...transactionState
                         }));
-                        setTransactionState({});
+                        setTransactionState({
+                            name: ''
+                        });
 
                         close();
                     } }>
-                        <ValueComponent
-                            setEnabled={ setSubmitEnabled }
-                            onChange={ state => setTransactionState(Object.assign(transactionState, state)) }
-                            currencies={ currencies }
-                            min={ -convert(currencies, findTransactions(transactions, account._id)) }
-                        />
-                        <Button disabled={ !submitEnabled } type='submit' style={ { marginTop: 5 } }>Create</Button>
+                        {
+                            accountType.config.selfReported ? <Input value={ transactionState.name } onChange={ e => {
+                                setTransactionState({
+                                    ...transactionState,
+                                    name: e.target.value
+                                });
+                            } } placeholder='Name' style={ { marginTop: 10, marginBottom: 10 } }/> : null
+                        }
+                        {
+                            createElement(accountType.component, {
+                                setEnabled: enabled => setSubmitEnabled(transactionState.name && enabled),
+                                onChange: state => setTransactionState(Object.assign(transactionState, state))
+                            })
+                        }
+                        <Button disabled={ !submitEnabled } type='submit' style={ { marginTop: 5 } }>Add</Button>
                     </form>
                 </Card> }
                 buttonProps={ {

@@ -9,4 +9,6 @@ class Bank extends AccountModel {
     }
 }
 
-AccountRegistry.registerAccountType(Bank, ValueComponent);
+AccountRegistry.registerAccountType(Bank, ValueComponent, {
+    selfReported: true
+});

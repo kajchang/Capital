@@ -1,5 +1,5 @@
-import React, { createElement, useState } from 'react';
-import { Button, Card } from 'reactstrap';
+import React, { Fragment, createElement, useState } from 'react';
+import { Button, Card, Input } from 'reactstrap';
 import SortTable from '../components/SortTable';
 import PopupSearch from '../components/PopupSearch';
 import ModalButton from '../components/ModalButton';
@@ -94,15 +94,27 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
                         }));
                         setSelectedType(null);
                         setDisplaySubmitEnabled(false);
-                        setAccountState({});
+                        setAccountState({
+                            name: ''
+                        });
 
                         close();
                     } }>
                         {
-                            selectedType !== null ? createElement(AccountRegistry.getAccountType(selectedType).component, {
-                                setEnabled: setDisplaySubmitEnabled,
-                                onChange: state => setAccountState(Object.assign(accountState, state))
-                            }) : null
+                            selectedType !== null ? <Fragment>
+                                <Input value={ accountState.name } onChange={ e => {
+                                    setAccountState({
+                                        ...accountState,
+                                        name: e.target.value
+                                    });
+                                } } placeholder='Name' style={ { marginTop: 10, marginBottom: 10 } }/>
+                                {
+                                    createElement(AccountRegistry.getAccountType(selectedType).component, {
+                                        setEnabled: enabled => setDisplaySubmitEnabled(accountState.name && enabled),
+                                        onChange: state => setAccountState(Object.assign(accountState, state))
+                                    })
+                                }
+                            </Fragment> : null
                         }
                         <Button disabled={ !displaySubmitEnabled } type='submit' style={ { marginTop: 5 } }>Create</Button>
                     </form>
