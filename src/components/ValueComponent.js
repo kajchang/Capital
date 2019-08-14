@@ -3,9 +3,17 @@ import { Input, InputGroup, InputGroupAddon } from 'reactstrap';
 
 import { connect } from 'react-redux';
 
-const ValueComponent = ({ setEnabled, onChange, currencies, min = 0 }) => {
+import { store } from '../';
+import { createTransaction } from '../redux/actions';
+import TransactionModel from '../models/TransactionModel';
+
+const ValueComponent = ({ createTransaction, useOnSubmit, setEnabled, onChange, currencies, min = 0 }) => {
     const [value, setValue] = useState(0);
     const [currency, setCurrency] = useState('USD');
+    useOnSubmit(ctx => createTransaction(new TransactionModel({
+        ...ctx,
+        name: 'Initial Amount'
+    })));
 
     return (
         <InputGroup style={ { marginTop: 10, marginBottom: 10 } }>
@@ -42,4 +50,8 @@ const mapStateToProps = state => ({
     currencies: state.currencies.data
 });
 
-export default connect(mapStateToProps)(ValueComponent);
+const mapDispatchToProps = dispatch => ({
+   createTransaction: transaction => dispatch(createTransaction(transaction))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ValueComponent);

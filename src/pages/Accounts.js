@@ -1,4 +1,4 @@
-import React, { Fragment, createElement, useState } from 'react';
+import React, { Fragment, createElement, useState, useRef } from 'react';
 import { Button, Card, Input } from 'reactstrap';
 import SortTable from '../components/SortTable';
 import PopupSearch from '../components/PopupSearch';
@@ -7,7 +7,6 @@ import ModalButton from '../components/ModalButton';
 import { connect } from 'react-redux';
 import { createAccount, createTransaction } from '../redux/actions';
 import AccountRegistry from '../utils/AccountRegistry';
-import TransactionModel from '../models/TransactionModel';
 import { convert, findTransactions } from '../utils/util';
 import _ from 'lodash-es';
 import moment from 'moment';
@@ -17,6 +16,7 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
     const [selectedType, setSelectedType] = useState(null);
     const [displaySubmitEnabled, setDisplaySubmitEnabled] = useState(false);
     const [accountState, setAccountState] = useState({});
+    const onSubmit = useRef(() => {});
 
     return (
         <div style={ { margin: 25 } }>
@@ -86,12 +86,11 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
                         createAccount(new (AccountRegistry.getAccountType(selectedType))(Object.assign(
                             accountState, { _id, created: timestamp }
                         )));
-                        createTransaction(new TransactionModel({
-                            name: 'Initial Amount',
+                        onSubmit.current({
                             accountId: _id,
                             values,
                             created: timestamp
-                        }));
+                        });
                         setSelectedType(null);
                         setDisplaySubmitEnabled(false);
                         setAccountState({
@@ -109,9 +108,10 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
                                     });
                                 } } placeholder='Name' style={ { marginTop: 10, marginBottom: 10 } }/>
                                 {
-                                    createElement(AccountRegistry.getAccountType(selectedType).component, {
+                                    createElement(AccountRegistry.getAccountType(selectedType).config.component, {
                                         setEnabled: enabled => setDisplaySubmitEnabled(accountState.name && enabled),
-                                        onChange: state => setAccountState(Object.assign(accountState, state))
+                                        onChange: state => setAccountState(Object.assign(accountState, state)),
+                                        useOnSubmit: func => onSubmit.current = func
                                     })
                                 }
                             </Fragment> : null

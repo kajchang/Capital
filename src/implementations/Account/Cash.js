@@ -9,6 +9,7 @@ class Cash extends AccountModel {
     }
 }
 
-AccountRegistry.registerAccountType(Cash, ValueComponent, {
-    selfReported: true
+AccountRegistry.registerAccountType(Cash, {
+    component: ValueComponent,
+    bulk: false
 });

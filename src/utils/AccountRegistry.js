@@ -2,8 +2,7 @@ const AccountRegistry = (() => {
     const accountTypes = {};
     const configs = {};
 
-    const registerAccountType = (cls, component, config) => {
-        cls.component = component;
+    const registerAccountType = (cls, config) => {
         accountTypes[cls.name] = cls;
         cls.config = config;
         configs[cls.name] = config;
@@ -16,6 +15,7 @@ const AccountRegistry = (() => {
     return {
         registerAccountType,
         getAccountType,
+        getAccountConfig,
         getAccountTypes
     };
 })();

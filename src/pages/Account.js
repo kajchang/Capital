@@ -1,4 +1,4 @@
-import React, { createElement, useState } from 'react';
+import React, { createElement, useState, useRef } from 'react';
 import { Button, Card, CardBody, CardTitle, Row, Col, Input } from 'reactstrap';
 import SortTable from '../components/SortTable';
 import ModalButton from '../components/ModalButton';
@@ -7,9 +7,7 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import { convert, findTransactions } from '../utils/util';
 import _ from 'lodash-es';
-import TransactionModel from '../models/TransactionModel';
 import { createTransaction, deleteAccount } from '../redux/actions';
-import AccountRegistry from '../utils/AccountRegistry';
 
 const Account = ({ match, accounts, currencies, transactions, createTransaction, deleteAccount, history }) => {
     const account = accounts.find(account => account._id === match.params.accountId);
@@ -17,6 +15,7 @@ const Account = ({ match, accounts, currencies, transactions, createTransaction,
 
     const [submitEnabled, setSubmitEnabled] = useState(false);
     const [transactionState, setTransactionState] = useState({});
+    const onSubmit = useRef(() => {});
 
     return (
         <div style={ { margin: 25 } }>
@@ -36,10 +35,10 @@ const Account = ({ match, accounts, currencies, transactions, createTransaction,
                     <form onSubmit={ e => {
                         e.preventDefault();
 
-                        createTransaction(new TransactionModel({
+                        onSubmit.current({
                             accountId: account._id,
                             ...transactionState
-                        }));
+                        });
                         setTransactionState({
                             name: ''
                         });
@@ -47,7 +46,7 @@ const Account = ({ match, accounts, currencies, transactions, createTransaction,
                         close();
                     } }>
                         {
-                            accountType.config.selfReported ? <Input value={ transactionState.name } onChange={ e => {
+                            !accountType.config.bulk ? <Input value={ transactionState.name } onChange={ e => {
                                 setTransactionState({
                                     ...transactionState,
                                     name: e.target.value
@@ -55,9 +54,10 @@ const Account = ({ match, accounts, currencies, transactions, createTransaction,
                             } } placeholder='Name' style={ { marginTop: 10, marginBottom: 10 } }/> : null
                         }
                         {
-                            createElement(accountType.component, {
+                            createElement(accountType.config.component, {
                                 setEnabled: enabled => setSubmitEnabled(transactionState.name && enabled),
-                                onChange: state => setTransactionState(Object.assign(transactionState, state))
+                                onChange: state => setTransactionState(Object.assign(transactionState, state)),
+                                useOnSubmit: func => onSubmit.current = func
                             })
                         }
                         <Button disabled={ !submitEnabled } type='submit' style={ { marginTop: 5 } }>Add</Button>
