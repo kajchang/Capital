@@ -24,14 +24,14 @@ const Landing = ({ accounts, currencies, transactions, history }) => (
                         </div> : null }/>
                         <Pie
                             data={ accounts.reduce((acc, cur) => {
-                                const match = acc.find(data => data.name === cur.constructor.name);
+                                const match = acc.find(data => data.name === cur.constructor.config.name);
 
                                 if (match) {
                                     match.value += +convert(currencies, findTransactions(transactions, cur._id)).toFixed(2);
                                     match.count++;
                                 } else {
                                     acc.push({
-                                        name: cur.constructor.name,
+                                        name: cur.constructor.config.name,
                                         value: +convert(currencies, findTransactions(transactions, cur._id)).toFixed(2),
                                         count: 1
                                     });

@@ -3,9 +3,12 @@ const AccountRegistry = (() => {
     const configs = {};
 
     const registerAccountType = (cls, config) => {
-        accountTypes[cls.name] = cls;
+        if (!config.name) {
+            config.name = cls.name;
+        }
+        accountTypes[config.name] = cls;
         cls.config = config;
-        configs[cls.name] = config;
+        configs[config.name] = config;
     };
 
     const getAccountType = type => accountTypes[type];

@@ -5,17 +5,18 @@ import PopupSearch from '../components/PopupSearch';
 import ModalButton from '../components/ModalButton';
 
 import { connect } from 'react-redux';
-import { createAccount, createTransaction } from '../redux/actions';
+import { createAccount } from '../redux/actions';
 import AccountRegistry from '../utils/AccountRegistry';
 import { convert, findTransactions } from '../utils/util';
 import _ from 'lodash-es';
 import moment from 'moment';
 import uuid from 'uuid/v1';
 
-const Accounts = ({ accounts, currencies, transactions, createAccount, createTransaction, history }) => {
+const Accounts = ({ accounts, currencies, transactions, createAccount, history }) => {
     const [selectedType, setSelectedType] = useState(null);
-    const [displaySubmitEnabled, setDisplaySubmitEnabled] = useState(false);
     const [accountState, setAccountState] = useState({});
+
+    const [submitEnabled, setSubmitEnabled] = useState(false);
     const onSubmit = useRef(() => {});
 
     return (
@@ -30,7 +31,7 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
                 ],
                 rows: accounts.map(account => ({
                     name: account.name,
-                    type: account.constructor.name,
+                    type: account.constructor.config.name,
                     value: convert(currencies, findTransactions(transactions, account._id)).toFixed(2),
                     lastUpdated: account.lastUpdated.format('MMM Do, YYYY'),
                     created: account.created.format('MMM Do, YYYY'),
@@ -80,19 +81,16 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
 
                         const _id = uuid();
                         const timestamp = moment();
-                        const values = accountState.values;
-                        delete accountState.values;
 
                         createAccount(new (AccountRegistry.getAccountType(selectedType))(Object.assign(
                             accountState, { _id, created: timestamp }
                         )));
                         onSubmit.current({
                             accountId: _id,
-                            values,
                             created: timestamp
                         });
                         setSelectedType(null);
-                        setDisplaySubmitEnabled(false);
+                        setSubmitEnabled(false);
                         setAccountState({
                             name: ''
                         });
@@ -108,15 +106,14 @@ const Accounts = ({ accounts, currencies, transactions, createAccount, createTra
                                     });
                                 } } placeholder='Name' style={ { marginTop: 10, marginBottom: 10 } }/>
                                 {
-                                    createElement(AccountRegistry.getAccountType(selectedType).config.component, {
-                                        setEnabled: enabled => setDisplaySubmitEnabled(accountState.name && enabled),
-                                        onChange: state => setAccountState(Object.assign(accountState, state)),
+                                    createElement(AccountRegistry.getAccountConfig(selectedType).component, {
+                                        setEnabled: setSubmitEnabled,
                                         useOnSubmit: func => onSubmit.current = func
                                     })
                                 }
                             </Fragment> : null
                         }
-                        <Button disabled={ !displaySubmitEnabled } type='submit' style={ { marginTop: 5 } }>Create</Button>
+                        <Button disabled={ !(submitEnabled && accountState.name) } type='submit' style={ { marginTop: 5 } }>Create</Button>
                     </form>
                 </Card> }
             />
@@ -131,8 +128,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    createAccount: account => dispatch(createAccount(account)),
-    createTransaction: transaction => dispatch(createTransaction(transaction))
+    createAccount: account => dispatch(createAccount(account))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Accounts);

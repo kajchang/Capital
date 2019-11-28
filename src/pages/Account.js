@@ -13,8 +13,9 @@ const Account = ({ match, accounts, currencies, transactions, createTransaction,
     const account = accounts.find(account => account._id === match.params.accountId);
     const accountType = account.__proto__.constructor;
 
+    const [transactionName, setTransactionName] = useState('');
+
     const [submitEnabled, setSubmitEnabled] = useState(false);
-    const [transactionState, setTransactionState] = useState({});
     const onSubmit = useRef(() => {});
 
     return (
@@ -29,7 +30,7 @@ const Account = ({ match, accounts, currencies, transactions, createTransaction,
                 </CardBody>
             </Card>
             <ModalButton
-                text='+ Add Transaction'
+                text={ accountType.config.bulk ? 'Update Account' : '+ Add Transaction' }
                 component={ ({ close }) => <Card style={ { width: '80vw', padding: 25 } }>
                     <span onClick={ close } style={ { cursor: 'pointer', position: 'absolute', top: 5, right: 5 } }>✕</span>
                     <form onSubmit={ e => {
@@ -37,30 +38,23 @@ const Account = ({ match, accounts, currencies, transactions, createTransaction,
 
                         onSubmit.current({
                             accountId: account._id,
-                            ...transactionState
+                            name: transactionName
                         });
-                        setTransactionState({
-                            name: ''
-                        });
+                        setTransactionName('');
 
                         close();
                     } }>
                         {
-                            !accountType.config.bulk ? <Input value={ transactionState.name } onChange={ e => {
-                                setTransactionState({
-                                    ...transactionState,
-                                    name: e.target.value
-                                });
-                            } } placeholder='Name' style={ { marginTop: 10, marginBottom: 10 } }/> : null
+                            !accountType.config.bulk ?
+                                <Input value={ transactionName } onChange={ e => setTransactionName(e.target.value) } placeholder='Name' style={ { marginTop: 10, marginBottom: 10 } }/> : null
                         }
                         {
                             createElement(accountType.config.component, {
-                                setEnabled: enabled => setSubmitEnabled(transactionState.name && enabled),
-                                onChange: state => setTransactionState(Object.assign(transactionState, state)),
+                                setEnabled: setSubmitEnabled,
                                 useOnSubmit: func => onSubmit.current = func
                             })
                         }
-                        <Button disabled={ !submitEnabled } type='submit' style={ { marginTop: 5 } }>Add</Button>
+                        <Button disabled={ !(submitEnabled && transactionName) } type='submit' style={ { marginTop: 5 } }>Add</Button>
                     </form>
                 </Card> }
                 buttonProps={ {

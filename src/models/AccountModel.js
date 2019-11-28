@@ -12,7 +12,7 @@ export default class AccountModel {
 
     serialize() {
         return Object.assign({}, this, {
-            type: this.constructor.name,
+            type: this.constructor.config.name,
             created: this.created.toISOString(),
             lastUpdated: this.lastUpdated.toISOString()
         });

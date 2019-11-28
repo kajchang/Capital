@@ -12,6 +12,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './implementations/Account/Cash';
 import './implementations/Account/Bank';
+import './implementations/Account/WellsFargo';
 
 connect();
 
